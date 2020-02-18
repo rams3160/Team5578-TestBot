@@ -29,8 +29,9 @@ void Robot::RobotInit() {
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
   
-  m_driverController.SetYChannel(1);
-  m_driverController.SetXChannel(4);
+  m_driverController.SetYChannel(4);
+  m_driverController.SetXChannel(1);
+  m_driverController.SetThrottleChannel(3);
 
 }
 
@@ -85,7 +86,15 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-m_drive.ArcadeDrive(m_driverController.GetX(),m_driverController.GetY());
+
+  double baseSpeed = .6;
+  double throttleSpeed = .4;
+  double boost = m_driverController.GetThrottle()*(throttleSpeed);
+  int xSign = m_driverController.GetX() > 0 ? 1 : -1;
+  int ySign = m_driverController.GetY() > 0 ? 1: -1;
+
+  m_drive.ArcadeDrive((m_driverController.GetX()*baseSpeed)+(boost*xSign),(m_driverController.GetY()*baseSpeed)+(boost*ySign));
+
 }
 
 void Robot::TestPeriodic() {}
