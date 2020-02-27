@@ -86,15 +86,19 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
+  double baseSpeed = .65;
+  double boostSpeed = .35;
 
-  double baseSpeed = .6;
-  double throttleSpeed = .4;
-  double boost = m_driverController.GetThrottle()*(throttleSpeed);
-  int xSign = m_driverController.GetX() > 0 ? 1 : -1;
-  int ySign = m_driverController.GetY() > 0 ? 1: -1;
+  double throttleSpeed = m_driverController.GetThrottle();
 
-  m_drive.ArcadeDrive((m_driverController.GetX()*baseSpeed)+(boost*xSign),(m_driverController.GetY()*baseSpeed)+(boost*ySign));
+  double leftStick = m_driverController.GetRawAxis(5);//arcade left
+  double rightStick = m_driverController.GetRawAxis(1);//arcade right
+  
+  double speed = baseSpeed + (throttleSpeed * boostSpeed);
 
+
+  //m_drive.ArcadeDrive((m_driverController.GetX()*baseSpeed)+(boost*xSign),(m_driverController.GetY()*baseSpeed)+(boost*ySign));
+  m_drive.TankDrive(leftStick * speed , rightStick * speed);
 }
 
 void Robot::TestPeriodic() {}
