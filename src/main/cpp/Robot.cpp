@@ -15,13 +15,16 @@
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/Joystick.h>
 #include <ctre/Phoenix.h>
+#include <frc/Spark.h>
+#include <rev/SparkMax.h>
 
 
+rev::SparkMax m_spark1 {1};
+rev::SparkMax m_spark2 {2};
 
-WPI_TalonSRX m_talon1{1};
-WPI_TalonSRX m_talon2{2};
+TalonSRX m_talon1 {1};
 
-frc::DifferentialDrive m_drive{m_talon1,m_talon2};
+frc::DifferentialDrive m_drive{m_spark1,m_spark2};
 frc::Joystick m_driverController{0};
 
 void Robot::RobotInit() {
@@ -31,7 +34,7 @@ void Robot::RobotInit() {
   
   m_driverController.SetYChannel(4);
   m_driverController.SetXChannel(1);
-  m_driverController.SetThrottleChannel(3);
+  // m_driverController.SetThrottleChannel(3);
 
 }
 
@@ -81,20 +84,26 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
-  m_talon2.SetInverted(false);
-  m_talon2.SetInverted(false);
+    m_spark1.SetInverted(false);
+    m_spark2.SetInverted(false);
+    m_talon1.SetInverted(false);
 }
 
 void Robot::TeleopPeriodic() {
 
   double baseSpeed = .6;
-  double throttleSpeed = .4;
-  double boost = m_driverController.GetThrottle()*(throttleSpeed);
+  // double throttleSpeed = .4;
+  // double boost = m_driverController.GetThrottle()*(throttleSpeed);
   int xSign = m_driverController.GetX() > 0 ? 1 : -1;
   int ySign = m_driverController.GetY() > 0 ? 1: -1;
+  bool intakeButton = m_driverController.GetRawButton(1);
 
-  m_drive.ArcadeDrive((m_driverController.GetX()*baseSpeed)+(boost*xSign),(m_driverController.GetY()*baseSpeed)+(boost*ySign));
-
+  m_drive.ArcadeDrive((m_driverController.GetX()*baseSpeed)+(xSign),(m_driverController.GetY()*baseSpeed)+(ySign));
+   
+  if(intakeButton)
+  {
+    m_talon1.Set(ControlMode::PercentOutput,.3);
+  }
 }
 
 void Robot::TestPeriodic() {}
